@@ -291,6 +291,15 @@
       transform:translateY(-1px);
     }
 
+    .option:focus{
+      outline:3px solid rgba(244,155,84,.25);
+      outline-offset:2px;
+    }
+
+    .option:focus:not(:focus-visible){
+      outline:none;
+    }
+
     .option .letter{
       flex:0 0 auto;
       width:32px;
@@ -785,7 +794,16 @@
       document.getElementById("result").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       renderQuestion();
-      window.scrollTo({top:0, behavior:"smooth"});
+      requestAnimationFrame(() => {
+        setTimeout(scrollToQuizTop, 40);
+      });
+    }
+
+    function scrollToQuizTop(){
+      const quiz = document.getElementById("quiz");
+      if(!quiz) return;
+      const top = quiz.getBoundingClientRect().top + window.pageYOffset - 12;
+      window.scrollTo({top, behavior:"smooth"});
     }
 
     function renderQuestion(){
@@ -809,10 +827,20 @@
     }
 
     function choose(index){
+      // 避免手機或瀏覽器保留上一題按鈕焦點，造成下一題看起來像有預設選項
+      if(document.activeElement && typeof document.activeElement.blur === "function"){
+        document.activeElement.blur();
+      }
+
       answers[current] = OPTION_TO_TYPE[index];
       if(current < QUESTIONS.length - 1){
         current++;
         renderQuestion();
+
+        // 進入下一題時，自動回到題目最上方，避免畫面停在上一題選項的位置
+        requestAnimationFrame(() => {
+          setTimeout(scrollToQuizTop, 40);
+        });
       }else{
         showResult();
       }
@@ -822,6 +850,9 @@
       if(current > 0){
         current--;
         renderQuestion();
+        requestAnimationFrame(() => {
+          setTimeout(scrollToQuizTop, 40);
+        });
       }
     }
 
