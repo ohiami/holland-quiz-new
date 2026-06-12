@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗｜手機UX強化版</title>
-  <!-- version: 20260612-mobile-ux3 -->
+  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗｜手機UX4強制置頂版</title>
+  <!-- version: 20260612-mobile-ux4-fixed-quiz-scroll -->
+  <!-- version: 20260612-mobile-ux4-selected-feedback -->
   <style>
     :root{
       --bg:#fff8f1;
@@ -320,6 +321,24 @@
       scroll-margin-top:12px;
     }
 
+
+    .option.selected{
+      background:#ffe7cf !important;
+      border-color:#f49b54 !important;
+      box-shadow:0 10px 22px rgba(244,155,84,.18);
+      transform:translateY(-1px);
+    }
+
+    .option.selected .letter{
+      background:#f49b54;
+      color:#fff;
+    }
+
+    .option:disabled{
+      cursor:default;
+      opacity:1;
+    }
+
     .option .letter{
       flex:0 0 auto;
       width:32px;
@@ -507,6 +526,96 @@
 
     .hidden{display:none !important}
 
+
+    /* UX4：手機測驗強制置頂版
+       測驗進行時，把 quiz 固定成全螢幕獨立捲動區。
+       這樣手機不會繼續停在上一題答案的位置。 */
+    body.quiz-mode{
+      overflow:hidden;
+      height:100dvh;
+    }
+
+    body.quiz-mode .wrap{
+      width:100%;
+      min-height:100dvh;
+      padding:0;
+      margin:0;
+    }
+
+    body.quiz-mode .topbar,
+    body.quiz-mode #landing{
+      display:none !important;
+    }
+
+    body.quiz-mode #quiz.quiz-shell{
+      display:block !important;
+      position:fixed;
+      inset:0;
+      z-index:100;
+      width:100vw;
+      height:100dvh;
+      max-width:none;
+      margin:0;
+      padding:18px;
+      border-radius:0;
+      border:0;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255,202,138,.62), transparent 28%),
+        radial-gradient(circle at 82% 16%, rgba(244,155,84,.18), transparent 30%),
+        linear-gradient(160deg, #fff8f1 0%, #fffdf9 55%, #fff3e8 100%);
+    }
+
+    body.quiz-mode #quiz .question-card{
+      margin-top:0;
+      scroll-margin-top:0;
+    }
+
+    body.quiz-mode #quiz .progress-row{
+      position:sticky;
+      top:0;
+      z-index:5;
+      padding:8px 0 14px;
+      background:linear-gradient(180deg, rgba(255,248,241,.98) 0%, rgba(255,248,241,.92) 82%, rgba(255,248,241,0) 100%);
+    }
+
+    .option{
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select:none;
+    }
+
+    @media (hover:hover) and (pointer:fine){
+      .option:hover{
+        background:#fff1e2;
+        border-color:#efba8c;
+        transform:translateY(-1px);
+      }
+    }
+
+    @media (hover:none){
+      .option:hover,
+      .option:active,
+      .option:focus{
+        background:#fffaf5;
+        border-color:#f2dcc8;
+        transform:none;
+        outline:none;
+      }
+    }
+
+    .option:focus{
+      outline:none;
+    }
+
+    .option:focus-visible{
+      outline:3px solid rgba(244,155,84,.25);
+      outline-offset:2px;
+    }
+
+
     @media (max-width:720px){
       .wrap{width:min(100% - 24px, 960px); padding:16px 0 28px}
       .topbar{align-items:flex-start}
@@ -531,7 +640,7 @@
         <div class="brand-badge">🧭</div>
         <div>何倫碼職涯興趣探索</div>
       </div>
-      <div class="pill">12 題｜約 3 分鐘｜自動產出結果｜UX3</div>
+      <div class="pill">12 題｜約 3 分鐘｜自動產出結果｜UX4</div>
     </div>
 
     <section class="card hero" id="landing">
@@ -812,18 +921,15 @@
       answers = [];
       document.getElementById("landing").style.display = "none";
       document.getElementById("result").style.display = "none";
-      document.getElementById("quiz").style.display = "block";
+      enterQuizMode();
       renderQuestion();
-      scrollToQuestionTop();
+      resetQuizScroll();
     }
 
     function scrollToQuestionTop(){
       const target = document.getElementById("questionCard") || document.getElementById("quiz");
       if(!target) return;
-
-      // 手機瀏覽器有時會保留點擊位置；這裡用多段立即捲動，確保下一題從題目上方開始看。
       const jump = () => target.scrollIntoView({behavior:"auto", block:"start", inline:"nearest"});
-
       jump();
       requestAnimationFrame(jump);
       setTimeout(jump, 60);
@@ -851,9 +957,11 @@
     }
 
     function choose(index){
-      // 避免手機保留上一題按鈕的觸控／焦點狀態，讓下一題看起來像有預設答案
-      if(document.activeElement && typeof document.activeElement.blur === "function"){
-        document.activeElement.blur();
+      const selectedButton = document.querySelectorAll(".option")[index];
+
+      // 讓使用者清楚看到自己剛剛點選哪一個答案
+      if(selectedButton){
+        selectedButton.classList.add("selected");
       }
 
       document.querySelectorAll(".option").forEach(btn => {
@@ -862,13 +970,20 @@
 
       answers[current] = OPTION_TO_TYPE[index];
 
-      if(current < QUESTIONS.length - 1){
-        current++;
-        renderQuestion();
-        scrollToQuestionTop();
-      }else{
-        showResult();
-      }
+      // 保留短暫視覺回饋，再進入下一題
+      setTimeout(() => {
+        if(document.activeElement && typeof document.activeElement.blur === "function"){
+          document.activeElement.blur();
+        }
+
+        if(current < QUESTIONS.length - 1){
+          current++;
+          renderQuestion();
+          scrollToQuestionTop();
+        }else{
+          showResult();
+        }
+      }, 450);
     }
 
     function goBack(){
@@ -877,19 +992,20 @@
           document.activeElement.blur();
         }
         current--;
+        resetQuizScroll();
         renderQuestion();
-        scrollToQuestionTop();
+        resetQuizScroll();
       }
     }
 
     function restart(){
       current = 0;
       answers = [];
+      leaveQuizMode();
       document.getElementById("landing").style.display = "block";
-      document.getElementById("quiz").style.display = "none";
       document.getElementById("result").style.display = "none";
       document.getElementById("copyStatus").textContent = "";
-      window.scrollTo({top:0, behavior:"smooth"});
+      window.scrollTo({top:0, behavior:"auto"});
     }
 
     function computeScores(){
@@ -908,7 +1024,7 @@
       const info = TYPE_INFO[primary];
 
       document.getElementById("bar").style.width = "100%";
-      document.getElementById("quiz").style.display = "none";
+      leaveQuizMode();
       document.getElementById("result").style.display = "block";
 
       document.getElementById("codeText").textContent = code;
@@ -935,7 +1051,7 @@
       });
 
       fireConfetti();
-      window.scrollTo({top:0, behavior:"smooth"});
+      window.scrollTo({top:0, behavior:"auto"});
     }
 
     function copyResult(){
