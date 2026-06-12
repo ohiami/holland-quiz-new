@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗</title>
+  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗｜手機UX強化版</title>
+  <!-- version: 20260612-mobile-ux3 -->
   <style>
     :root{
       --bg:#fff8f1;
@@ -285,19 +286,38 @@
       line-height:1.6;
     }
 
-    .option:hover{
-      background:#fff1e2;
-      border-color:#efba8c;
-      transform:translateY(-1px);
+    .option{
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    @media (hover:hover) and (pointer:fine){
+      .option:hover{
+        background:#fff1e2;
+        border-color:#efba8c;
+        transform:translateY(-1px);
+      }
+    }
+
+    @media (hover:none){
+      .option:hover{
+        background:#fffaf5;
+        border-color:#f2dcc8;
+        transform:none;
+      }
     }
 
     .option:focus{
+      outline:none;
+    }
+
+    .option:focus-visible{
       outline:3px solid rgba(244,155,84,.25);
       outline-offset:2px;
     }
 
-    .option:focus:not(:focus-visible){
-      outline:none;
+    .question-card{
+      scroll-margin-top:12px;
     }
 
     .option .letter{
@@ -511,7 +531,7 @@
         <div class="brand-badge">🧭</div>
         <div>何倫碼職涯興趣探索</div>
       </div>
-      <div class="pill">12 題｜約 3 分鐘｜自動產出結果</div>
+      <div class="pill">12 題｜約 3 分鐘｜自動產出結果｜UX3</div>
     </div>
 
     <section class="card hero" id="landing">
@@ -546,7 +566,7 @@
         <div class="progress" aria-label="測驗進度"><div class="bar" id="bar"></div></div>
       </div>
 
-      <div class="question-card">
+      <div class="question-card" id="questionCard">
         <div class="q-tag" id="qTag">Question 1</div>
         <div class="question" id="questionText"></div>
         <div class="options" id="options"></div>
@@ -794,16 +814,20 @@
       document.getElementById("result").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       renderQuestion();
-      requestAnimationFrame(() => {
-        setTimeout(scrollToQuizTop, 40);
-      });
+      scrollToQuestionTop();
     }
 
-    function scrollToQuizTop(){
-      const quiz = document.getElementById("quiz");
-      if(!quiz) return;
-      const top = quiz.getBoundingClientRect().top + window.pageYOffset - 12;
-      window.scrollTo({top, behavior:"smooth"});
+    function scrollToQuestionTop(){
+      const target = document.getElementById("questionCard") || document.getElementById("quiz");
+      if(!target) return;
+
+      // 手機瀏覽器有時會保留點擊位置；這裡用多段立即捲動，確保下一題從題目上方開始看。
+      const jump = () => target.scrollIntoView({behavior:"auto", block:"start", inline:"nearest"});
+
+      jump();
+      requestAnimationFrame(jump);
+      setTimeout(jump, 60);
+      setTimeout(jump, 220);
     }
 
     function renderQuestion(){
@@ -827,20 +851,21 @@
     }
 
     function choose(index){
-      // 避免手機或瀏覽器保留上一題按鈕焦點，造成下一題看起來像有預設選項
+      // 避免手機保留上一題按鈕的觸控／焦點狀態，讓下一題看起來像有預設答案
       if(document.activeElement && typeof document.activeElement.blur === "function"){
         document.activeElement.blur();
       }
 
+      document.querySelectorAll(".option").forEach(btn => {
+        btn.disabled = true;
+      });
+
       answers[current] = OPTION_TO_TYPE[index];
+
       if(current < QUESTIONS.length - 1){
         current++;
         renderQuestion();
-
-        // 進入下一題時，自動回到題目最上方，避免畫面停在上一題選項的位置
-        requestAnimationFrame(() => {
-          setTimeout(scrollToQuizTop, 40);
-        });
+        scrollToQuestionTop();
       }else{
         showResult();
       }
@@ -848,11 +873,12 @@
 
     function goBack(){
       if(current > 0){
+        if(document.activeElement && typeof document.activeElement.blur === "function"){
+          document.activeElement.blur();
+        }
         current--;
         renderQuestion();
-        requestAnimationFrame(() => {
-          setTimeout(scrollToQuizTop, 40);
-        });
+        scrollToQuestionTop();
       }
     }
 
