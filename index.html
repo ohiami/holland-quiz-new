@@ -2,10 +2,11 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗｜手機UX4強制置頂版</title>
-  <!-- version: 20260612-mobile-ux4-fixed-quiz-scroll -->
-  <!-- version: 20260612-mobile-ux4-selected-feedback -->
+  <title>探索你的職涯靈魂原廠設定｜12 題何倫碼測驗｜UX5</title>
+  <!-- version: 20260612-ux5-clean-rebuild -->
   <style>
     :root{
       --bg:#fff8f1;
@@ -13,6 +14,7 @@
       --ink:#2f2a28;
       --muted:#7b6f68;
       --accent:#f49b54;
+      --accent-dark:#d86e2f;
       --accent2:#ffca8a;
       --accent3:#ffe8d1;
       --line:#f1d8c2;
@@ -170,7 +172,7 @@
       cursor:pointer;
       font-family:inherit;
       font-weight:800;
-      transition:.18s transform ease, .18s box-shadow ease, .18s background ease;
+      transition:.18s transform ease, .18s box-shadow ease, .18s background ease, .18s border-color ease;
     }
 
     button:active{transform:scale(.98)}
@@ -183,8 +185,6 @@
       box-shadow:0 12px 24px rgba(244,155,84,.32);
       font-size:17px;
     }
-
-    .btn-primary:hover{box-shadow:0 16px 28px rgba(244,155,84,.38)}
 
     .btn-secondary{
       border-radius:999px;
@@ -206,6 +206,8 @@
       line-height:1.7;
     }
 
+    .hidden{display:none !important}
+
     .quiz-shell{
       display:none;
       padding:30px;
@@ -223,6 +225,7 @@
       font-weight:800;
       color:#805c43;
       font-size:15px;
+      white-space:nowrap;
     }
 
     .progress{
@@ -246,6 +249,7 @@
       border-radius:24px;
       background:#fff;
       border:1px solid var(--line);
+      scroll-margin-top:12px;
     }
 
     .q-tag{
@@ -285,9 +289,6 @@
       font-weight:700;
       font-size:16px;
       line-height:1.6;
-    }
-
-    .option{
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
@@ -308,19 +309,12 @@
       }
     }
 
-    .option:focus{
-      outline:none;
-    }
+    .option:focus{outline:none}
 
     .option:focus-visible{
       outline:3px solid rgba(244,155,84,.25);
       outline-offset:2px;
     }
-
-    .question-card{
-      scroll-margin-top:12px;
-    }
-
 
     .option.selected{
       background:#ffe7cf !important;
@@ -524,102 +518,10 @@
       100%{transform:translateY(110vh) rotate(420deg); opacity:0}
     }
 
-    .hidden{display:none !important}
-
-
-    /* UX4：手機測驗強制置頂版
-       測驗進行時，把 quiz 固定成全螢幕獨立捲動區。
-       這樣手機不會繼續停在上一題答案的位置。 */
-    body.quiz-mode{
-      overflow:hidden;
-      height:100dvh;
-    }
-
-    body.quiz-mode .wrap{
-      width:100%;
-      min-height:100dvh;
-      padding:0;
-      margin:0;
-    }
-
-    body.quiz-mode .topbar,
-    body.quiz-mode #landing{
-      display:none !important;
-    }
-
-    body.quiz-mode #quiz.quiz-shell{
-      display:block !important;
-      position:fixed;
-      inset:0;
-      z-index:100;
-      width:100vw;
-      height:100dvh;
-      max-width:none;
-      margin:0;
-      padding:18px;
-      border-radius:0;
-      border:0;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
-      background:
-        radial-gradient(circle at 12% 8%, rgba(255,202,138,.62), transparent 28%),
-        radial-gradient(circle at 82% 16%, rgba(244,155,84,.18), transparent 30%),
-        linear-gradient(160deg, #fff8f1 0%, #fffdf9 55%, #fff3e8 100%);
-    }
-
-    body.quiz-mode #quiz .question-card{
-      margin-top:0;
-      scroll-margin-top:0;
-    }
-
-    body.quiz-mode #quiz .progress-row{
-      position:sticky;
-      top:0;
-      z-index:5;
-      padding:8px 0 14px;
-      background:linear-gradient(180deg, rgba(255,248,241,.98) 0%, rgba(255,248,241,.92) 82%, rgba(255,248,241,0) 100%);
-    }
-
-    .option{
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      user-select:none;
-    }
-
-    @media (hover:hover) and (pointer:fine){
-      .option:hover{
-        background:#fff1e2;
-        border-color:#efba8c;
-        transform:translateY(-1px);
-      }
-    }
-
-    @media (hover:none){
-      .option:hover,
-      .option:active,
-      .option:focus{
-        background:#fffaf5;
-        border-color:#f2dcc8;
-        transform:none;
-        outline:none;
-      }
-    }
-
-    .option:focus{
-      outline:none;
-    }
-
-    .option:focus-visible{
-      outline:3px solid rgba(244,155,84,.25);
-      outline-offset:2px;
-    }
-
-
     @media (max-width:720px){
       .wrap{width:min(100% - 24px, 960px); padding:16px 0 28px}
       .topbar{align-items:flex-start}
-      .pill{font-size:12px}
+      .pill{font-size:12px; white-space:normal; text-align:right}
       .hero{padding:30px 22px}
       .hero:after{font-size:42px}
       .hero-grid{grid-template-columns:repeat(3, 1fr)}
@@ -631,6 +533,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="confetti" id="confetti"></div>
 
@@ -640,7 +543,7 @@
         <div class="brand-badge">🧭</div>
         <div>何倫碼職涯興趣探索</div>
       </div>
-      <div class="pill">12 題｜約 3 分鐘｜自動產出結果｜UX4</div>
+      <div class="pill">12 題｜約 3 分鐘｜自動產出結果｜UX5</div>
     </div>
 
     <section class="card hero" id="landing">
@@ -660,8 +563,8 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" onclick="startQuiz()">開始測驗</button>
-        <button class="btn-secondary" onclick="showAbout()">這是什麼測驗？</button>
+        <button type="button" class="btn-primary" id="startBtn">開始測驗</button>
+        <button type="button" class="btn-secondary" id="aboutBtn">這是什麼測驗？</button>
       </div>
 
       <div class="notice" id="about">
@@ -682,8 +585,8 @@
       </div>
 
       <div class="nav-row">
-        <button class="link-btn" onclick="goBack()" id="backBtn">← 回上一題</button>
-        <button class="link-btn" onclick="restart()">重新開始</button>
+        <button type="button" class="link-btn" id="backBtn">← 回上一題</button>
+        <button type="button" class="link-btn" id="restartBtn">重新開始</button>
       </div>
     </section>
 
@@ -711,8 +614,8 @@
         <div class="score-grid" id="scoreGrid"></div>
 
         <div class="actions">
-          <button class="btn-primary" onclick="copyResult()">複製我的結果</button>
-          <button class="btn-secondary" onclick="restart()">重新測驗</button>
+          <button type="button" class="btn-primary" id="copyBtn">複製我的結果</button>
+          <button type="button" class="btn-secondary" id="resultRestartBtn">重新測驗</button>
           <span class="copy-status" id="copyStatus"></span>
         </div>
 
@@ -910,56 +813,74 @@
 
     let current = 0;
     let answers = [];
+    let isTransitioning = false;
+
+    function byId(id){
+      return document.getElementById(id);
+    }
 
     function showAbout(){
-      const about = document.getElementById("about");
-      about.classList.toggle("hidden");
+      byId("about").classList.toggle("hidden");
+    }
+
+    function scrollToQuestionTop(){
+      const target = byId("questionCard") || byId("quiz");
+      if(!target) return;
+
+      const jump = () => target.scrollIntoView({
+        behavior:"auto",
+        block:"start",
+        inline:"nearest"
+      });
+
+      jump();
+      requestAnimationFrame(jump);
+      setTimeout(jump, 80);
+      setTimeout(jump, 220);
     }
 
     function startQuiz(){
       current = 0;
       answers = [];
-      document.getElementById("landing").style.display = "none";
-      document.getElementById("result").style.display = "none";
-      enterQuizMode();
-      renderQuestion();
-      resetQuizScroll();
-    }
+      isTransitioning = false;
 
-    function scrollToQuestionTop(){
-      const target = document.getElementById("questionCard") || document.getElementById("quiz");
-      if(!target) return;
-      const jump = () => target.scrollIntoView({behavior:"auto", block:"start", inline:"nearest"});
-      jump();
-      requestAnimationFrame(jump);
-      setTimeout(jump, 60);
-      setTimeout(jump, 220);
+      byId("landing").style.display = "none";
+      byId("result").style.display = "none";
+      byId("quiz").style.display = "block";
+
+      renderQuestion();
+      scrollToQuestionTop();
     }
 
     function renderQuestion(){
       const item = QUESTIONS[current];
       const total = QUESTIONS.length;
-      document.getElementById("progressText").textContent = `第 ${current + 1} / ${total} 題`;
-      document.getElementById("bar").style.width = `${((current) / total) * 100}%`;
-      document.getElementById("qTag").textContent = `Question ${current + 1}`;
-      document.getElementById("questionText").textContent = item.q;
-      document.getElementById("backBtn").style.visibility = current === 0 ? "hidden" : "visible";
 
-      const options = document.getElementById("options");
+      byId("progressText").textContent = `第 ${current + 1} / ${total} 題`;
+      byId("bar").style.width = `${(current / total) * 100}%`;
+      byId("qTag").textContent = `Question ${current + 1}`;
+      byId("questionText").textContent = item.q;
+      byId("backBtn").style.visibility = current === 0 ? "hidden" : "visible";
+
+      const options = byId("options");
       options.innerHTML = "";
+
       item.options.forEach((text, index)=>{
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "option";
         btn.innerHTML = `<span class="letter">${LETTERS[index]}</span><span>${text}</span>`;
-        btn.onclick = () => choose(index);
+        btn.addEventListener("click", () => choose(index, btn));
         options.appendChild(btn);
       });
     }
 
-    function choose(index){
-      const selectedButton = document.querySelectorAll(".option")[index];
+    function choose(index, selectedButton){
+      if(isTransitioning) return;
+      isTransitioning = true;
 
-      // 讓使用者清楚看到自己剛剛點選哪一個答案
+      answers[current] = OPTION_TO_TYPE[index];
+
       if(selectedButton){
         selectedButton.classList.add("selected");
       }
@@ -968,9 +889,6 @@
         btn.disabled = true;
       });
 
-      answers[current] = OPTION_TO_TYPE[index];
-
-      // 保留短暫視覺回饋，再進入下一題
       setTimeout(() => {
         if(document.activeElement && typeof document.activeElement.blur === "function"){
           document.activeElement.blur();
@@ -979,41 +897,49 @@
         if(current < QUESTIONS.length - 1){
           current++;
           renderQuestion();
+          isTransitioning = false;
           scrollToQuestionTop();
         }else{
           showResult();
+          isTransitioning = false;
         }
       }, 450);
     }
 
     function goBack(){
-      if(current > 0){
+      if(current > 0 && !isTransitioning){
         if(document.activeElement && typeof document.activeElement.blur === "function"){
           document.activeElement.blur();
         }
         current--;
-        resetQuizScroll();
         renderQuestion();
-        resetQuizScroll();
+        scrollToQuestionTop();
       }
     }
 
     function restart(){
       current = 0;
       answers = [];
-      leaveQuizMode();
-      document.getElementById("landing").style.display = "block";
-      document.getElementById("result").style.display = "none";
-      document.getElementById("copyStatus").textContent = "";
+      isTransitioning = false;
+
+      byId("landing").style.display = "block";
+      byId("quiz").style.display = "none";
+      byId("result").style.display = "none";
+      byId("copyStatus").textContent = "";
+
       window.scrollTo({top:0, behavior:"auto"});
     }
 
     function computeScores(){
       const scores = {R:0, I:0, A:0, S:0, E:0, C:0};
-      answers.forEach(type => scores[type]++);
+      answers.forEach(type => {
+        if(scores[type] !== undefined) scores[type]++;
+      });
+
       const ranked = TYPE_ORDER
         .map(type => ({type, score:scores[type], order:TYPE_ORDER.indexOf(type)}))
         .sort((a,b) => b.score - a.score || a.order - b.order);
+
       return {scores, ranked};
     }
 
@@ -1023,16 +949,16 @@
       const primary = ranked[0].type;
       const info = TYPE_INFO[primary];
 
-      document.getElementById("bar").style.width = "100%";
-      leaveQuizMode();
-      document.getElementById("result").style.display = "block";
+      byId("bar").style.width = "100%";
+      byId("quiz").style.display = "none";
+      byId("result").style.display = "block";
 
-      document.getElementById("codeText").textContent = code;
-      document.getElementById("primaryIcon").textContent = info.icon;
-      document.getElementById("primaryTitle").textContent = `你的主導性格：${info.name}（${info.en}）`;
-      document.getElementById("primaryDesc").textContent = info.desc;
+      byId("codeText").textContent = code;
+      byId("primaryIcon").textContent = info.icon;
+      byId("primaryTitle").textContent = `你的主導性格：${info.name}（${info.en}）`;
+      byId("primaryDesc").textContent = info.desc;
 
-      const jobs = document.getElementById("jobs");
+      const jobs = byId("jobs");
       jobs.innerHTML = "";
       info.jobs.forEach(job => {
         const span = document.createElement("span");
@@ -1041,7 +967,7 @@
         jobs.appendChild(span);
       });
 
-      const scoreGrid = document.getElementById("scoreGrid");
+      const scoreGrid = byId("scoreGrid");
       scoreGrid.innerHTML = "";
       TYPE_ORDER.forEach(type => {
         const node = document.createElement("div");
@@ -1059,18 +985,25 @@
       const code = ranked.slice(0,3).map(x=>x.type).join("");
       const primary = ranked[0].type;
       const info = TYPE_INFO[primary];
+
       const text = `我的何倫碼是 ${code}。主導性格是 ${info.name}（${info.en}）。六大類型分數：R實用型 ${scores.R}、I研究型 ${scores.I}、A藝術型 ${scores.A}、S社會型 ${scores.S}、E企業型 ${scores.E}、C事務型 ${scores.C}。`;
-      navigator.clipboard.writeText(text).then(()=>{
-        document.getElementById("copyStatus").textContent = "已複製！";
-      }).catch(()=>{
-        document.getElementById("copyStatus").textContent = "複製失敗，請直接截圖結果。";
-      });
+
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(()=>{
+          byId("copyStatus").textContent = "已複製！";
+        }).catch(()=>{
+          byId("copyStatus").textContent = "複製失敗，請直接截圖結果。";
+        });
+      }else{
+        byId("copyStatus").textContent = "此瀏覽器不支援複製，請直接截圖結果。";
+      }
     }
 
     function fireConfetti(){
-      const box = document.getElementById("confetti");
+      const box = byId("confetti");
       box.innerHTML = "";
       const pieces = ["🎉","✨","🎊","⭐","🟠","🟡"];
+
       for(let i=0; i<46; i++){
         const span = document.createElement("span");
         span.textContent = pieces[Math.floor(Math.random()*pieces.length)];
@@ -1079,8 +1012,18 @@
         span.style.fontSize = `${16 + Math.random()*15}px`;
         box.appendChild(span);
       }
+
       setTimeout(()=>{ box.innerHTML = ""; }, 2600);
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      byId("startBtn").addEventListener("click", startQuiz);
+      byId("aboutBtn").addEventListener("click", showAbout);
+      byId("backBtn").addEventListener("click", goBack);
+      byId("restartBtn").addEventListener("click", restart);
+      byId("resultRestartBtn").addEventListener("click", restart);
+      byId("copyBtn").addEventListener("click", copyResult);
+    });
   </script>
 </body>
 </html>
